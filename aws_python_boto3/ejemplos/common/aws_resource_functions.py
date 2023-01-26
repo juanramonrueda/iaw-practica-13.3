@@ -1,6 +1,6 @@
 import boto3
 import botocore
-
+import time
 """
 Create a security group
 """
@@ -189,13 +189,90 @@ def stop_instance(instance_name):
 Terminate an EC2 instance by name
 """
 def terminate_instance(instance_name):
-    # Se obtiene en variable el nombre de la instancia que está en ese momento en el bucle de "main.py"
+  # Create a boto3 resource instance
+  ec2 = boto3.resource('ec2')
+
+  # Get the instance using the filter method
+  instances = ec2.instances.filter(Filters=[{'Name':'tag:Name', 'Values':[instance_name]}])
+
+  # Store the instances in a list
+  instances_list = [i for i in instances]
+
+  if instances_list:
+      # Terminate the instances
+      for instance in instances_list:
+          instance.terminate()
+          print(f'Instance {instance.id} was terminated')
+  else:
+      print(f'The instance {instance_name} does not exist')
+
+"""
+Terminate an EC2 instance by name and waiting to it's terminate
+"""
+def terminate_instance_waiting(instance_name):
+	# Store the instance name from "main.py"
+	name_instance = instance_name
+
+	# Create a boto3 resource instance
+	ec2 = boto3.resource('ec2')
+	
+	# Get the instance using the filter method
+	instances = ec2.instances.filter(Filters=[{'Name':'tag:Name', 'Values':[instance_name]}])
+	
+	# Store the instances in a list
+	instances_list = [i for i in instances]
+	
+	if instances_list:
+		# Terminate the instances
+		for instance in instances_list:
+		# Counter to check if AWS has a problem
+			counter = 0
+    	
+			# Get instance ID using it's name
+			instance_id = get_instance_id(name_instance)
+
+			# Terminate the instance
+			instance.terminate()
+
+			# Message to host to wait until the instance it's terminated
+			print('Waiting until instance is terminated...')
+
+			# Store the actual instance data using it's ID
+			instance_data = ec2.Instance(instance_id)
+
+			# Get the status of the instance
+			instance_status = instance_data.state['Name']
+
+			# Loop to check the status of the instance or finish if the counter did 40 loops
+			while (instance_status != 'terminated') and (counter < 40):
+				# Pause to wait the change of state
+				time.sleep(10)
+				
+				# Store the new instance data using it's ID
+				instance_data = ec2.Instance(instance_id)
+
+				# Get the new status of the instance
+				instance_status = instance_data.state['Name']
+
+				# Increment of the counter to check if there are a problem with AWS
+				counter = counter + 1
+
+			# Message to the host to notice about the state of the instance
+			print(f'Instance {instance.id} was terminated')
+	else:
+		print(f'The instance {instance_name} does not exist')
+
+"""
+Terminate an EC2 instance by name using boto3.client('ec2')
+"""
+def terminate_instance_waiter_boto3_client(instance_name):
+    # Store the instance name from "main.py"
     name_instance = instance_name
 
     # Create a boto3 resource instance
     ec2 = boto3.resource('ec2')
 
-    # Uso de boto3 client para usar los waiters
+    # Create a boto3 client instance
     ec2_cli = boto3.client('ec2')
 
     # Get the instance using the filter method
@@ -210,19 +287,19 @@ def terminate_instance(instance_name):
             # Obtención del ID mediante el nombre de la instancia
             instance_id = get_instance_id(name_instance)
 
-            # Finalización de la instancia
+            # Terminate the instance
             instance.terminate()
 
-            # Mensaje para avisar al usuario que se está finalizando la instancia
+            # Message to host to wait until the instance it's terminated
             print('Waiting until instance is terminated...')
 
-            # Se genera un waiter, en este caso para la finalización de la instancia que se encuentra en el bucle
+            # Generate a waiter to terminated instances
             waiter = ec2_cli.get_waiter('instance_terminated')
 
-            # Se hace uso del waiter mediante el ID de la instancia para esperar hasta que finalice
+            # Use of the waiter with the instance ID to wait until the instance its terminated
             waiter.wait(InstanceIds=[instance_id])
 
-            # Aviso de que la instancia que se encuentra en el bucle de "main.py" ha sido terminada
+            # Message to the host to notice about the state of the instance
             print(f'Instance {instance.id} was terminated')
     else:
         print(f'The instance {instance_name} does not exist')

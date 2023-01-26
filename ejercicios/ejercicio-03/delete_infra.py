@@ -44,7 +44,7 @@ for ec2_name in ec2_list_instance_name:
     print(f'Terminating the instance {ec2_name}...')
 
     # Eliminación de la instancia por nombre que hay en ese momento en el bucle 
-    aws.terminate_instance(ec2_name)
+    aws.terminate_instance_waiting(ec2_name)
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
