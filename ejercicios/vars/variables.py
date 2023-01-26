@@ -20,10 +20,16 @@ instance_name_nfs = 'iaw-practica-09-nfs'
 amazon_linux_ami_id = 'ami-0b5eea76982371e91'
 
 # Declaración de la variable para establecer el sistema operativo Ubuntu Server 22.04
-ubuntu_22_ami_id = 'ami-08e637cea2f053dfa'
+ubuntu_22_ami_id = 'ami-00874d747dde814fa'
+
+# Declaración de la variable para establecer el sistema operativo Red Hat Enterprise Linux 9
+rhel_9_ami_id = 'ami-08e637cea2f053dfa'
 
 # Declaración de la variable para establecer la cantidad de memoria RAM para la instancia, en este caso 1GB
 instance_ram_1gb = 't2.micro'
+
+# Declaración de la variable para establecer la cantidad de memoria RAM para la instancia, en este caso 2GB
+instance_ram_2b = 't2.small'
 
 # Declaración de la variable para establecer la cantidad de memoria RAM para la instancia, en este caso 4GB
 instance_ram_4gb = 't2.medium'

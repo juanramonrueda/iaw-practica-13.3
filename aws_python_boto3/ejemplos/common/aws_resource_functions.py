@@ -189,22 +189,43 @@ def stop_instance(instance_name):
 Terminate an EC2 instance by name
 """
 def terminate_instance(instance_name):
-  # Create a boto3 resource instance
-  ec2 = boto3.resource('ec2')
+    # Se obtiene en variable el nombre de la instancia que está en ese momento en el bucle de "main.py"
+    name_instance = instance_name
 
-  # Get the instance using the filter method
-  instances = ec2.instances.filter(Filters=[{'Name':'tag:Name', 'Values':[instance_name]}])
+    # Create a boto3 resource instance
+    ec2 = boto3.resource('ec2')
 
-  # Store the instances in a list
-  instances_list = [i for i in instances]
+    # Uso de boto3 client para usar los waiters
+    ec2_cli = boto3.client('ec2')
 
-  if instances_list:
-      # Terminate the instances
-      for instance in instances_list:
-          instance.terminate()
-          print(f'Instance {instance.id} was terminated')
-  else:
-      print(f'The instance {instance_name} does not exist')
+    # Get the instance using the filter method
+    instances = ec2.instances.filter(Filters=[{'Name':'tag:Name', 'Values':[instance_name]}])
+
+    # Store the instances in a list
+    instances_list = [i for i in instances]
+
+    if instances_list:
+        # Terminate the instances
+        for instance in instances_list:
+            # Obtención del ID mediante el nombre de la instancia
+            instance_id = get_instance_id(name_instance)
+
+            # Finalización de la instancia
+            instance.terminate()
+
+            # Mensaje para avisar al usuario que se está finalizando la instancia
+            print('Waiting until instance is terminated...')
+
+            # Se genera un waiter, en este caso para la finalización de la instancia que se encuentra en el bucle
+            waiter = ec2_cli.get_waiter('instance_terminated')
+
+            # Se hace uso del waiter mediante el ID de la instancia para esperar hasta que finalice
+            waiter.wait(InstanceIds=[instance_id])
+
+            # Aviso de que la instancia que se encuentra en el bucle de "main.py" ha sido terminada
+            print(f'Instance {instance.id} was terminated')
+    else:
+        print(f'The instance {instance_name} does not exist')
 
 """
 Create a new EC2 instance
