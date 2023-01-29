@@ -94,7 +94,7 @@ def main(user_option, counter):
                 total_instances = int(input('Enter the total instances to create (min 1 -- max 9): '))
                 count = count + 1
                 if count >= 5:
-                    print('Asshole!!')
+                    print('Jerk!!')
                     time.sleep(3)
                     continue
             menu_options.instance_ram()
