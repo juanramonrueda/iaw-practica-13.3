@@ -29,7 +29,7 @@ rhel_9_ami_id = 'ami-08e637cea2f053dfa'
 instance_ram_1gb = 't2.micro'
 
 # Declaración de la variable para establecer la cantidad de memoria RAM para la instancia, en este caso 2GB
-instance_ram_2b = 't2.small'
+instance_ram_2gb = 't2.small'
 
 # Declaración de la variable para establecer la cantidad de memoria RAM para la instancia, en este caso 4GB
 instance_ram_4gb = 't2.medium'
