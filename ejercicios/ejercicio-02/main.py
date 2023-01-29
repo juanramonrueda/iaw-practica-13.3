@@ -17,7 +17,7 @@ from ejercicios.vars import variables
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Creación del grupo de seguridad para las instancias backend
 
-aws.create_security_group(variables.instance_name_backend, variables.security_group_description_backend, variables.backend_ingress_permissions)
+aws.create_security_group(variables.security_group_name_backend, variables.security_group_description_backend, variables.backend_ingress_permissions)
 
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
